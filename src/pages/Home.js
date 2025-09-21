@@ -1,89 +1,83 @@
-import React, { useEffect, useState } from "react";
-import { Trophy, Star, BarChart3 } from "lucide-react";
-import ProgressBar from "../components/ProgressBar";
-import Badge from "../components/Badge";
-import Leaderboard from "../components/Leaderboard";
-import { getOfflineData } from "../utils/localStorage";
-import { getBadges } from "../utils/gamification";
-import Confetti from "react-confetti";
+import { BookOpen, Users, Trophy } from "lucide-react";
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Progress from '../components/ui/Progress';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-const Home = () => {
-  const [points, setPoints] = useState(0);
-  const [badges, setBadges] = useState([]);
-  const [animatedPoints, setAnimatedPoints] = useState(0);
+const data = [
+  { name: "Math", progress: 80 },
+  { name: "Science", progress: 60 },
+  { name: "English", progress: 90 },
+];
 
-  useEffect(() => {
-    const fetchProgress = async () => {
-      const data = (await getOfflineData("userProgress")) || { points: 0 };
-      setPoints(data.points);
-      setBadges(getBadges(data.points));
-    };
-    fetchProgress();
-  }, []);
-
-  // Animated points counter
-  useEffect(() => {
-    let start = 0;
-    const interval = setInterval(() => {
-      if (start >= points) clearInterval(interval);
-      else setAnimatedPoints(++start);
-    }, 10);
-    return () => clearInterval(interval);
-  }, [points]);
-
+export default function Home() {
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {points >= 50 && <Confetti />}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100">
+      {/* Hero Section */}
+      <section className="text-center py-16">
+        <h1 className="text-4xl font-bold text-indigo-700">Empowering Rural Learning</h1>
+        <p className="mt-2 text-gray-600 text-lg">Interactive, accessible, and fun learning for everyone</p>
+        <Button className="mt-6 px-6 py-3 rounded-2xl shadow-lg">Start Learning</Button>
+      </section>
 
-      {/* Header */}
-      <h1 className="text-3xl font-bold text-indigo-800 mb-6">
-        🎉 Welcome Back, Learner!
-      </h1>
+      {/* Dashboard Stats */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 px-10 py-8">
+        <Card>
+          <CardContent className="flex items-center space-x-4 p-6">
+            <BookOpen className="text-indigo-600" size={40} />
+            <div>
+              <h3 className="text-xl font-semibold">Lessons Completed</h3>
+              <p className="text-gray-500">120+</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center space-x-4 p-6">
+            <Users className="text-green-600" size={40} />
+            <div>
+              <h3 className="text-xl font-semibold">Active Learners</h3>
+              <p className="text-gray-500">350+</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center space-x-4 p-6">
+            <Trophy className="text-yellow-500" size={40} />
+            <div>
+              <h3 className="text-xl font-semibold">Achievements</h3>
+              <p className="text-gray-500">50+ Badges</p>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
 
-      {/* Points + Progress Section */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
-          <div className="flex items-center gap-2 mb-4">
-            <Star className="text-yellow-500" size={28} />
-            <h2 className="text-xl font-semibold text-gray-800">
-              Your Progress
-            </h2>
-          </div>
-          <p className="text-2xl font-bold text-indigo-700 mb-2">
-            {animatedPoints} Points
-          </p>
-          <ProgressBar points={animatedPoints} />
-        </div>
+      {/* Learning Progress Chart */}
+      <section className="px-10 py-8">
+        <h2 className="text-2xl font-bold mb-4 text-indigo-700">Module Progress</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={data}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="progress" fill="#4f46e5" />
+          </BarChart>
+        </ResponsiveContainer>
+      </section>
 
-        {/* Badges */}
-        <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
-          <div className="flex items-center gap-2 mb-4">
-            <Trophy className="text-orange-500" size={28} />
-            <h2 className="text-xl font-semibold text-gray-800">
-              Your Badges
-            </h2>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {badges.length > 0 ? (
-              badges.map((b, i) => <Badge key={i} name={b} />)
-            ) : (
-              <p className="text-gray-500 italic">No badges yet. Keep learning!</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Leaderboard */}
-      <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
-        <div className="flex items-center gap-2 mb-4">
-          <BarChart3 className="text-green-500" size={28} />
-          <h2 className="text-xl font-semibold text-gray-800">Leaderboard</h2>
-        </div>
-        <Leaderboard />
-      </div>
+      {/* Gamified Modules */}
+      <section className="px-10 py-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {data.map((module, i) => (
+          <Card key={i}>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold">{module.name}</h3>
+              <Progress value={module.progress} className="mt-4" />
+              <p className="mt-2 text-sm text-gray-600">{module.progress}% completed</p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
     </div>
   );
-};
+}
 
-export default Home;
 
