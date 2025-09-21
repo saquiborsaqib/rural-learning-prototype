@@ -1,50 +1,55 @@
-import React, { useEffect, useState } from "react";
-import ProgressBar from "../components/ProgressBar";
-import Badge from "../components/Badge";
-import Leaderboard from "../components/Leaderboard";
-import { getOfflineData } from "../utils/localStorage";
-import { getBadges } from "../utils/gamification";
-import Confetti from "react-confetti";
+import React from "react";
+import { Link } from "react-router-dom";
+import { BookOpen, BarChart2, Award } from "lucide-react";
 
-const Home = () => {
-  const [points, setPoints] = useState(0);
-  const [badges, setBadges] = useState([]);
-  const [animatedPoints, setAnimatedPoints] = useState(0);
-
-  useEffect(() => {
-    const fetchProgress = async () => {
-      const data = await getOfflineData("userProgress") || { points: 0 };
-      setPoints(data.points);
-      setBadges(getBadges(data.points));
-    };
-    fetchProgress();
-  }, []);
-
-  // Animated points counter
-  useEffect(() => {
-    let start = 0;
-    const interval = setInterval(() => {
-      if (start >= points) clearInterval(interval);
-      else setAnimatedPoints(++start);
-    }, 10);
-    return () => clearInterval(interval);
-  }, [points]);
-
+function Home() {
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Welcome</h1>
-      {points >= 50 && <Confetti />}
-      <ProgressBar points={animatedPoints} />
-      <div style={{ marginTop: "10px" }}>
-        {badges.map((b, i) => (
-          <Badge key={i} name={b} />
-        ))}
+    <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 p-8">
+      {/* Hero Section */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">
+          📚 Rural Learning Prototype
+        </h1>
+        <p className="text-lg text-gray-600">
+          Accessible, engaging, and gamified education for rural students 🚀
+        </p>
       </div>
-      <Leaderboard />
+
+      {/* Navigation Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <Link to="/lessons">
+          <div className="bg-white shadow-lg rounded-2xl p-6 flex flex-col items-center hover:shadow-xl transition">
+            <BookOpen className="w-12 h-12 text-blue-600 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Lessons</h2>
+            <p className="text-gray-500 text-center">
+              Explore interactive lessons with quizzes and rewards.
+            </p>
+          </div>
+        </Link>
+
+        <Link to="/analytics">
+          <div className="bg-white shadow-lg rounded-2xl p-6 flex flex-col items-center hover:shadow-xl transition">
+            <BarChart2 className="w-12 h-12 text-green-600 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Analytics</h2>
+            <p className="text-gray-500 text-center">
+              Track your progress and performance in real time.
+            </p>
+          </div>
+        </Link>
+
+        <Link to="/leaderboard">
+          <div className="bg-white shadow-lg rounded-2xl p-6 flex flex-col items-center hover:shadow-xl transition">
+            <Award className="w-12 h-12 text-yellow-600 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Leaderboard</h2>
+            <p className="text-gray-500 text-center">
+              Compete with peers and earn badges & XP points.
+            </p>
+          </div>
+        </Link>
+      </div>
     </div>
   );
-};
+}
 
 export default Home;
-
 
